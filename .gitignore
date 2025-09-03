@@ -1,0 +1,28 @@
+# Node
+node_modules/
+coverage/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Jest/Artillery outputs
+/task1-testing/coverage/
+/task1-testing/.artillery/**
+
+# Go build
+/task3-unknown-language/user-api
+
+# Databases
+/task3-unknown-language/users.db
+
+# Cursor/AI tooling
+.cursor/
+
+# Misc
+.env

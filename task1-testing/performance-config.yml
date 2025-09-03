@@ -1,0 +1,60 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+    - duration: 120
+      arrivalRate: 20
+    - duration: 60
+      arrivalRate: 5
+  processor: './tests/performance/artillery-processor.js'
+
+scenarios:
+  - name: "Health Check Load Test"
+    weight: 30
+    flow:
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200
+
+  - name: "Get Tasks Performance"
+    weight: 40
+    flow:
+      - get:
+          url: "/tasks"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/tasks?limit=50"
+          expect:
+            - statusCode: 200
+
+  - name: "CRUD Operations Mix"
+    weight: 30
+    flow:
+      - post:
+          url: "/tasks"
+          json:
+            title: "Load test task {{ $randomString() }}"
+            description: "Performance testing task"
+            priority: "{{ $randomItem(['low', 'medium', 'high']) }}"
+          capture:
+            - json: "$.id"
+              as: "taskId"
+          expect:
+            - statusCode: 201
+      - get:
+          url: "/tasks/{{ taskId }}"
+          expect:
+            - statusCode: 200
+      - put:
+          url: "/tasks/{{ taskId }}"
+          json:
+            completed: true
+          expect:
+            - statusCode: 200
+      - delete:
+          url: "/tasks/{{ taskId }}"
+          expect:
+            - statusCode: 204
